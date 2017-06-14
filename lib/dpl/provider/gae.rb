@@ -7,7 +7,7 @@ module DPL
       NAME='google-cloud-sdk'
       EXT='.tar.gz'
       INSTALL='~'
-      BOOTSTRAP="#{INSTALL}/#{NAME}/bin/bootstrapping/install.py"
+      BOOTSTRAP="#{INSTALL}/#{NAME}/install.sh"
       GCLOUD="#{INSTALL}/#{NAME}/bin/gcloud"
 
       def with_python_2_7(cmd)
