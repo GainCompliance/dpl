@@ -79,17 +79,46 @@ module DPL
 
       def push_app
         command = GCLOUD
-        command << ' --quiet'
-        command << " --verbosity \"#{verbosity}\""
-        command << " --project \"#{project}\""
-        command << " app deploy \"#{config}\""
-        command << " --version \"#{version}\"" unless version.to_s.empty?
-        command << " --#{no_promote ? 'no-' : ''}promote"
-        command << ' --no-stop-previous-version' unless no_stop_previous_version.to_s.empty?
+        command += ' --quiet'
+        command += " --verbosity \"#{verbosity}\""
+        command += " --project \"#{project}\""
+        command += " app deploy \"#{config}\""
+        command += " --version \"#{version}\"" unless version.to_s.empty?
+        command += " --#{no_promote ? 'no-' : ''}promote"
+        command += ' --no-stop-previous-version' unless no_stop_previous_version.to_s.empty?
         unless with_python_2_7(command)
           log 'Deployment failed.'
           context.shell('find $HOME/.config/gcloud/logs -type f -print -exec cat {} \;')
           error ''
+        end
+      end
+
+      def run(command)
+        if command == 'promote'
+          promote
+        else
+          unless context.shell "#{command}"
+            error 'Running command failed.'
+          end
+        end
+      end
+
+      def promote
+        if no_promote
+          command = GCLOUD
+          command += " app versions migrate"
+          command += " #{version}"
+          command += ' --quiet'
+          command += " --verbosity \"#{verbosity}\""
+          command += " --project \"#{project}\""
+
+          unless with_python_2_7(command)
+            log 'Deployment failed.'
+            context.shell('find $HOME/.config/gcloud/logs -type f -print -exec cat {} \;')
+            error ''
+          end
+        else
+          log 'migration unnecessary, deployment has already been promoted'
         end
       end
     end
