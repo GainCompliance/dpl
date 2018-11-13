@@ -77,6 +77,10 @@ module DPL
         options[:no_stop_previous_version]
       end
 
+      def service
+        options[:service]
+      end
+
       def push_app
         command = GCLOUD
         command += ' --quiet'
@@ -109,6 +113,7 @@ module DPL
           command += " app versions migrate"
           command += " #{version}"
           command += ' --quiet'
+          command += "#{service ? ' --service ' + service : ''}"
           command += " --verbosity \"#{verbosity}\""
           command += " --project \"#{project}\""
 
